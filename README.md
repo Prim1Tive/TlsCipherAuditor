@@ -29,7 +29,9 @@ This script automates the process of checking SSL/TLS ciphers on a target domain
 
 2. Download the script:
    ```bash
-   curl -O https://raw.githubusercontent.com/yourusername/cipher-check/main/cipher-check.py
+   curl -O https://raw.githubusercontent.com/Prim1Tive/cipher-check/main/cipher-check.py
+   or
+   git clone 
    ```
 
 3. Make the script executable:
