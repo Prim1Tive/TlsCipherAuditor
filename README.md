@@ -75,3 +75,4 @@ All other ciphers are marked as unsafe.
 
 
 ## Example Output 
+![screenshot](/image/cipher-check-output.png "Optional title")
