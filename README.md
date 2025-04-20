@@ -8,6 +8,13 @@ This script automates the process of checking SSL/TLS ciphers on a target domain
 - 🟢 Safe ciphers are shown in green
 - 🔴 Unsafe ciphers are shown in red
 
+## Disclaimer
+
+**Important Notice**: The cipher classifications (safe/unsafe) in this tool are recommendations based on general security best practices and are not an industry standard. The security requirements for your specific use case may vary. Always:
+- Consult your organization's security policies
+- Follow relevant compliance requirements (e.g., PCI DSS, HIPAA)
+- Consult with security professionals for production environments
+
 ## Requirements
 
 - Python 3.x
@@ -31,7 +38,7 @@ This script automates the process of checking SSL/TLS ciphers on a target domain
    ```bash
    curl -O https://raw.githubusercontent.com/Prim1Tive/cipher-check/main/cipher-check.py
    or
-   git clone 
+   git clone https://github.com/Prim1Tive/Tls-Cipher-Audit.git
    ```
 
 3. Make the script executable:
@@ -66,12 +73,5 @@ The script considers the following ciphers as safe:
 
 All other ciphers are marked as unsafe.
 
-## Output Format
-
-The script outputs:
-1. SSL/TLS version information
-2. List of safe ciphers (in green)
-3. List of unsafe ciphers (in red)
-4. Total count of safe ciphers found
 
 ## Example Output 
