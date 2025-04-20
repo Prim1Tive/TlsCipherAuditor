@@ -1,19 +1,20 @@
-# Cipher Check Script
+# TLS Cipher Auditor
 
 A Python script that analyzes SSL/TLS ciphers using nmap's ssl-enum-ciphers script and provides a color-coded output of safe and unsafe ciphers.
-
-## Description
-
-This script automates the process of checking SSL/TLS ciphers on a target domain or IP address. It uses nmap's ssl-enum-ciphers script to enumerate supported ciphers and categorizes them as safe or unsafe based on modern security standards. The results are displayed with color coding for better visibility:
-- 🟢 Safe ciphers are shown in green
-- 🔴 Unsafe ciphers are shown in red
 
 ## Disclaimer
 
 **Important Notice**: The cipher classifications (safe/unsafe) in this tool are recommendations based on general security best practices and are not an industry standard. The security requirements for your specific use case may vary. Always:
 - Consult your organization's security policies
 - Follow relevant compliance requirements (e.g., PCI DSS, HIPAA)
+- Consider the specific needs of your application
 - Consult with security professionals for production environments
+
+## Description
+
+This script automates the process of checking SSL/TLS ciphers on a target domain or IP address. It uses nmap's ssl-enum-ciphers script to enumerate supported ciphers and categorizes them as safe or unsafe based on modern security standards. The results are displayed with color coding for better visibility:
+- 🟢 Safe ciphers are shown in green
+- 🔴 Unsafe ciphers are shown in red
 
 ## Requirements
 
@@ -36,14 +37,17 @@ This script automates the process of checking SSL/TLS ciphers on a target domain
 
 2. Download the script:
    ```bash
-   curl -O https://raw.githubusercontent.com/Prim1Tive/cipher-check/main/cipher-check.py
-   or
-   git clone https://github.com/Prim1Tive/Tls-Cipher-Audit.git
+   # Option 1: Direct download
+   curl -O https://raw.githubusercontent.com/Prim1Tive/TlsCipherAuditor/main/TlsCipherAuditor.py
+   
+   # Option 2: Clone the repository
+   git clone https://github.com/Prim1Tive/TlsCipherAuditor.git
+   cd TlsCipherAuditor
    ```
 
 3. Make the script executable:
    ```bash
-   chmod +x cipher-check.py
+   chmod +x TlsCipherAuditor.py
    ```
 
 ## Usage
@@ -52,12 +56,12 @@ You can run the script in two ways:
 
 1. With a command-line argument:
    ```bash
-   python cipher-check.py example.com
+   python TlsCipherAuditor.py example.com
    ```
 
 2. Interactive mode:
    ```bash
-   python cipher-check.py
+   python TlsCipherAuditor.py
    # You will be prompted to enter a domain or IP
    ```
 

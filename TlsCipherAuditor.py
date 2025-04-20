@@ -1,7 +1,7 @@
 # Auther: Michael Azoulay
 # Usecase: check for specific ciphers in nmap output
 # Dependencis: nmap installed in path. (can be called by typing nmap in terminal)
-# Date: 30.03.2025
+# Date: 20.04.2025
 # Version: 0.2
 
 import os
@@ -12,6 +12,32 @@ import sys
 GREEN = '\033[92m'  # Green for safe ciphers
 RED = '\033[91m'    # Red for unsafe ciphers
 RESET = '\033[0m'   # Reset color
+
+def show_help():
+    help_text = f"""
+{GREEN}TLS Cipher Auditor{RESET}
+    
+Usage:
+    python TlsCipherAuditor.py [options] [domain]
+
+Options:
+    -h, --help      Show this help message
+    
+Arguments:
+    domain          Domain name or IP address to check (optional)
+                    If not provided, script will run in interactive mode
+
+Interactive Mode Commands:
+    quit, exit      Exit the program
+    help            Show this help message
+
+Examples:
+    python TlsCipherAuditor.py example.com
+    python TlsCipherAuditor.py --help
+    python TlsCipherAuditor.py
+        (enters interactive mode)
+    """
+    print(help_text)
 
 def check_ciphers(domain):
     print("\nDomain: ", domain)
@@ -77,14 +103,20 @@ def check_ciphers(domain):
 def main():
     try:
         if len(sys.argv) > 1:
+            if sys.argv[1] in ['-h', '--help', 'help']:
+                show_help()
+                return
             check_ciphers(sys.argv[1])
         else:
-            print("Enter 'quit' or 'exit' to stop the program")
+            print("Enter 'quit' or 'exit' to stop the program, 'help' for usage information")
             while True:
                 domain = input('\nDomain or IP: ')
                 if domain.lower() in ['quit', 'exit']:
                     print("Exiting program...")
                     break
+                elif domain.lower() in ['help', '-h', '--help']:
+                    show_help()
+                    continue
                 if domain:
                     check_ciphers(domain)
 
