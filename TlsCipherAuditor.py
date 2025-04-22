@@ -1,8 +1,8 @@
-# Auther: Michael Azoulay
+# Auther: Michael Azoulay (https://www.linkedin.com/in/michael-azoulay/)  
 # Usecase: check for specific ciphers in nmap output
-# Dependencis: nmap installed in path. (can be called by typing nmap in terminal)
-# Date: 20.04.2025
-# Version: 0.2
+# Dependencis: Nmap must be installed and accessible from the system path (i.e., you should be able to run nmap directly from the terminal).
+# # Date: 22.04.2025
+# Version: 0.3
 
 import os
 import re
@@ -24,7 +24,7 @@ Options:
     -h, --help      Show this help message
     
 Arguments:
-    domain          Domain name or IP address to check (optional)
+    $domain          Domain name or IP address to check (optional)
                     If not provided, script will run in interactive mode
 
 Interactive Mode Commands:
@@ -32,7 +32,7 @@ Interactive Mode Commands:
     help            Show this help message
 
 Examples:
-    python TlsCipherAuditor.py example.com
+    python TlsCipherAuditor.py $domain
     python TlsCipherAuditor.py --help
     python TlsCipherAuditor.py
         (enters interactive mode)
@@ -127,3 +127,46 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+""" all cipher suites available by nmap
+You can customize which cipher suites are considered secure by modifying the safe_ciphers list
+------------------------------------
+tls13_cipher_suites = [
+    "TLS_AES_128_GCM_SHA256",
+    "TLS_AES_256_GCM_SHA384",
+    "TLS_CHACHA20_POLY1305_SHA256",
+    "TLS_AES_128_CCM_SHA256",
+    "TLS_AES_128_CCM_8_SHA256"
+],
+tls12_cipher_suites = [
+    "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+    "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+    "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+    "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",
+    "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+    "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+    "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
+    "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
+    "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256",
+    "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256",
+    "TLS_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_RSA_WITH_AES_256_GCM_SHA384",
+    "TLS_RSA_WITH_AES_128_CBC_SHA256",
+    "TLS_RSA_WITH_AES_256_CBC_SHA256"
+],
+
+tls10_11_cipher_suites = [
+    "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+    "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
+    "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+    "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+    "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
+    "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
+    "TLS_RSA_WITH_AES_128_CBC_SHA",
+    "TLS_RSA_WITH_AES_256_CBC_SHA",
+    "TLS_RSA_WITH_3DES_EDE_CBC_SHA"
+]
+"""
