@@ -131,7 +131,11 @@ if __name__ == "__main__":
 
 """ all cipher suites available by nmap
 You can customize which cipher suites are considered secure by modifying the safe_ciphers list
-------------------------------------
+- Consult your organization's security policies
+- Follow relevant compliance requirements (e.g., PCI DSS, HIPAA)
+- Consider the specific needs of your application
+- Consult with security professionals for production environments
+------------------------------------------------------------------------------------------------
 tls13_cipher_suites = [
     "TLS_AES_128_GCM_SHA256",
     "TLS_AES_256_GCM_SHA384",
