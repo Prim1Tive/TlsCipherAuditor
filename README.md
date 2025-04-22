@@ -77,22 +77,23 @@ The script considers the following ciphers as safe:
 
 ### Customizing Safe Ciphers
 
-You can customize which ciphers are considered "safe" by modifying the `safe_ciphers` set in the script. This allows you to:
-- Add your organization's approved ciphers
-- Remove ciphers that don't meet your security requirements
-- Match your specific compliance needs
+You can customize which ciphers are considered "safe" by modifying the `safe_ciphers` set in the script. The project includes a `ciphers.py` file which serves as a reference database of all cipher suites nmap can detect.
 
-To customize the list:
-1. Open `TlsCipherAuditor.py` in a text editor
-2. Locate the `safe_ciphers` set in the `check_ciphers()` function
-3. Modify the list according to your requirements
+#### How to Use ciphers.py
+The `ciphers.py` file is a reference file containing all possible cipher suites that nmap can detect. To use it:
+
+1. Open `ciphers.py` to view the complete list of available cipher suites
+2. Choose the cipher suites you want to consider as "safe"
+3. Add these to the `safe_ciphers` set in `TlsCipherAuditor.py`:
 ```python
 safe_ciphers = {
-    "YOUR_APPROVED_CIPHER_1",
-    "YOUR_APPROVED_CIPHER_2",
-    # Add or remove ciphers as needed
+    "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+    # Add your chosen ciphers from ciphers.py here
 }
 ```
+
+Note: `ciphers.py` is a reference file only - it contains the complete list of cipher suites that nmap can detect. Use it to look up and select the cipher suites you want to mark as safe in your environment.
 
 ## Example Output 
 ![screenshot](/image/cipher-check-output.png "Optional title")
