@@ -43,6 +43,9 @@ Additionally, the script supports:
 
    # For macOS
    brew install nmap
+
+   # For Windows
+   Install from this link: [https://nmap.org/download.html](https://nmap.org/download.html#windows)
    ```
 
 2. Download the script:
