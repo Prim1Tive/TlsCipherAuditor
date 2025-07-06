@@ -116,7 +116,7 @@ def load_cipher_list():
         print(f"{GREEN}[+] Loaded {len(ciphers)} ciphers from {CIPHER_FILE}.{RESET}")
         return ciphers
     except FileNotFoundError:
-        print(f"{RED}[-] {CIPHER_FILE} not found. Using default cipher list.(Use -u/--update to create {CIPHER_FILE} {RESET}")
+        print(f"{RED}[-] {CIPHER_FILE} not found. Using default cipher list.(Use -u/--update to create {CIPHER_FILE}){RESET}")
         return default_safe_ciphers
 
 
