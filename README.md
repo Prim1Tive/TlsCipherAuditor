@@ -64,13 +64,7 @@ Additionally, the script supports:
    ```bash
    pip install requests
    ```
-
-4. Make the script executable:
-
-   ```bash
-   chmod +x TlsCipherAuditor.py
-   ```
-
+   
 ## Usage
 
 You can run the script in several ways:
@@ -79,6 +73,10 @@ You can run the script in several ways:
 
   ```bash
   python TlsCipherAuditor.py example.com
+  
+  or
+  
+  python TlsCipherAuditor.py 1.1.1.1
   ```
 
 - **Interactive mode:**
@@ -92,6 +90,7 @@ You can run the script in several ways:
 
   ```bash
   python TlsCipherAuditor.py --update
+  # Updating from: https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml
   ```
 
 - **Show help:**
@@ -104,12 +103,30 @@ You can run the script in several ways:
 
 The script loads the safe cipher list from the local file `recommended_ciphers.txt` if present. Otherwise, it falls back to a built-in default set:
 
-- TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256  
-- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384  
-- TLS_AES_128_GCM_SHA256  
-- TLS_AES_256_GCM_SHA384  
-- TLS_CHACHA20_POLY1305_SHA256  
-- TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384  
+    "TLS_AES_128_CCM_SHA256",
+    "TLS_AES_128_GCM_SHA256",
+    "TLS_AES_256_GCM_SHA384",
+    "TLS_CHACHA20_POLY1305_SHA256",
+    "TLS_DHE_PSK_WITH_AES_128_CCM",
+    "TLS_DHE_PSK_WITH_AES_128_GCM_SHA256",
+    "TLS_DHE_PSK_WITH_AES_256_CCM",
+    "TLS_DHE_PSK_WITH_AES_256_GCM_SHA384",
+    "TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256",
+    "TLS_DHE_RSA_WITH_AES_128_CCM",
+    "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_DHE_RSA_WITH_AES_256_CCM",
+    "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
+    "TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+    "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+    "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+    "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+    "TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256",
+    "TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256",
+    "TLS_ECDHE_PSK_WITH_AES_256_GCM_SHA384",
+    "TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256",
+    "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+    "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
 
 ### Customizing Safe Ciphers
 
