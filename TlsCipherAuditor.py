@@ -12,6 +12,7 @@ try:
     import requests
 except ImportError:
     requests = None
+quite_flag = False
 
 # ANSI color codes
 GREEN = '\033[92m'  # Green for safe ciphers
@@ -59,7 +60,8 @@ Usage:
 
 Options:
     -h, --help      Show this help message
-    --update        Update cipher list from IANA website
+    -u, --update        Update cipher list from IANA website
+    -q, --quite
 
 Arguments:
     $domain          Domain name or IP address to check (optional)
@@ -86,7 +88,7 @@ def normalize_cipher_name(cipher_name):
 
 
 def update_cipher_list():
-    if not requests:
+    if not requests and quite_flag:
         print(f"{RED}[-] 'requests' module not installed. Cannot update cipher list.{RESET}")
         return False
     try:
@@ -113,10 +115,10 @@ def load_cipher_list():
     try:
         with open(CIPHER_FILE, "r") as f:
             ciphers = {line.strip() for line in f if line.strip()}
-        print(f"{GREEN}[+] Loaded {len(ciphers)} ciphers from {CIPHER_FILE}.{RESET}")
+        if quite_flag: print(f"{GREEN}[+] Loaded {len(ciphers)} ciphers from {CIPHER_FILE}.{RESET}")
         return ciphers
     except FileNotFoundError:
-        print(f"{RED}[-] {CIPHER_FILE} not found. Using default cipher list.(Use -u/--update to create {CIPHER_FILE}){RESET}")
+        if quite_flag: print(f"{RED}[-] {CIPHER_FILE} not found. Using default cipher list.(Use -u/--update to create {CIPHER_FILE}){RESET}")
         return default_safe_ciphers
 
 
@@ -178,6 +180,8 @@ def main():
             elif arg in ['-u', '--update', 'update']:
                 success = update_cipher_list()
                 sys.exit(0 if success else 1)
+            elif arg in ['-q', '--quite', 'quite']:
+                quite_flag = True
             else:
                 check_ciphers(sys.argv[1])
         else:
