@@ -112,6 +112,7 @@ Examples:
     python TlsCipherAuditor.py --update
     python TlsCipherAuditor.py
         (enters interactive mode)
+
   ```
 
 - **Interactive mode:**
