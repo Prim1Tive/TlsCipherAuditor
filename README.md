@@ -86,10 +86,10 @@ You can run the script in several ways:
   ```bash
   TLS Cipher Auditor
 
-Usage:
+  Usage:
     python TlsCipherAuditor.py [options] [domain]
 
-Options:
+  Options:
     -h, --help            Show this help message
     -u, --update          Update cipher list from IANA website
     -p, --ports PORTS     Ports to scan, separated by commas or spaces
@@ -97,15 +97,15 @@ Options:
         --quite          (Alias for --quiet)
         --no-color       Disable ANSI colors
 
-Arguments:
+  Arguments:
     domain                Domain name or IP address to check (optional)
                           If not provided, script runs in interactive mode
 
-Interactive Mode Commands:
+  Interactive Mode Commands:
     quit, exit            Exit the program
     help                  Show this help message
 
-Examples:
+  Examples:
     python TlsCipherAuditor.py example.com
     python TlsCipherAuditor.py example.com -p 443,445,8081
     python TlsCipherAuditor.py example.com -p 443 445 8081
