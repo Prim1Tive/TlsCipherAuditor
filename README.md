@@ -94,7 +94,7 @@ You can run the script in several ways:
     -u, --update          Update cipher list from IANA website
     -p, --ports PORTS     Ports to scan, separated by commas or spaces
     -q, --quiet           Suppress non-essential output
-        --no-color       Disable ANSI colors
+        --no-color        Disable ANSI colors
 
   Arguments:
     domain                Domain name or IP address to check (optional)
