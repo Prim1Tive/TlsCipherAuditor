@@ -344,11 +344,10 @@ def main():
     try:
         parser = argparse.ArgumentParser(add_help=True, description="Audit TLS cipher suites reported by nmap against a recommended list.")
         parser.add_argument("domain", nargs="?", help="Domain name or IP address to check")
-        parser.add_argument("-u", "--update", action="store_true", help="Update cipher list from IANA website")
-        parser.add_argument("-p", "--ports", nargs="+", help="Ports to scan, separated by commas or spaces")
-        parser.add_argument("-q", "--quiet", action="store_true", help="Suppress non-essential output")
-        parser.add_argument("--quite", action="store_true", help=argparse.SUPPRESS)
-        parser.add_argument("--no-color", action="store_true", help="Disable ANSI colors in output")
+        parser.add_argument("-u",  "--update", action="store_true", help="Update cipher list from IANA website")
+        parser.add_argument("-p",  "--ports", nargs="+", help="Ports to scan, separated by commas or spaces")
+        parser.add_argument("-q",  "--quiet", action="store_true", help="Suppress non-essential output")
+        parser.add_argument("-nc", "--no-color", action="store_true", help="Disable ANSI colors in output")
 
         args = parser.parse_args()
 
