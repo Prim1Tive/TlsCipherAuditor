@@ -93,7 +93,7 @@ You can run the script in several ways:
     -h, --help            Show this help message
     -u, --update          Update cipher list from IANA website
     -p, --ports PORTS     Ports to scan, separated by commas or spaces
-    -q, --quite           Suppress non-essential output
+    -q, --quiet           Suppress non-essential output
         --no-color       Disable ANSI colors
 
   Arguments:
