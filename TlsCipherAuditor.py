@@ -240,6 +240,45 @@ def load_cipher_list():
         return default_safe_ciphers
 
 
+def parse_nmap_cipher_output(output):
+    ciphers_by_port = {}
+    current_port = "Scan results"
+    current_tls_version = None
+
+    for raw_line in output.splitlines():
+        line = raw_line.strip()
+
+        port_match = re.match(r"^(\d+)/(tcp|udp)\s+(\S+)(?:\s+(\S+))?", line)
+        if port_match:
+            port, protocol, state, service = port_match.groups()
+            current_port = f"{port}/{protocol} {state}"
+            if service:
+                current_port += f" {service}"
+            current_tls_version = None
+            continue
+
+        version_match = re.match(r"^\|\s+(TLSv\d+\.\d+|TLSv\d+|SSLv\d+):", line)
+        if version_match:
+            current_tls_version = version_match.group(1)
+            if current_port not in ciphers_by_port:
+                ciphers_by_port[current_port] = {}
+            if current_tls_version not in ciphers_by_port[current_port]:
+                ciphers_by_port[current_port][current_tls_version] = []
+            continue
+
+        cipher_match = re.search(r"TLS_[A-Z0-9_]+", line)
+        if cipher_match and current_tls_version:
+            raw_cipher = cipher_match.group(0)
+            cipher_name = normalize_cipher_name(raw_cipher)
+            ciphers_by_port[current_port][current_tls_version].append(cipher_name)
+
+    return {
+        port: versions
+        for port, versions in ciphers_by_port.items()
+        if any(versions.values())
+    }
+
+
 def check_ciphers(domain, ports=None):
     print(f"\nDomain: {domain}")
     if ports:
@@ -250,8 +289,6 @@ def check_ciphers(domain, ports=None):
         return
 
     safe_ciphers = load_cipher_list()
-
-    ciphers_by_version = {}
 
     nmap_command = [
         "nmap",
@@ -270,45 +307,34 @@ def check_ciphers(domain, ports=None):
     if result.returncode != 0 and result.stderr:
         print(f"{RED}[-] nmap error: {result.stderr.strip()}{RESET}")
 
-    lines = result.stdout.splitlines()
-
-    current_tls_version = None
+    ciphers_by_port = parse_nmap_cipher_output(result.stdout)
     total_safe_ciphers = 0
 
-    for raw_line in lines:
-        line = raw_line.strip()
-
-        version_match = re.match(r"^\|\s+(TLSv\d+\.\d+|TLSv\d+|SSLv\d+):", line)
-        if version_match:
-            current_tls_version = version_match.group(1)
-            if current_tls_version not in ciphers_by_version:
-                ciphers_by_version[current_tls_version] = []
-            continue
-
-        cipher_match = re.search(r"TLS_[A-Z0-9_]+", line)
-        if cipher_match and current_tls_version:
-            raw_cipher = cipher_match.group(0)
-            cipher_name = normalize_cipher_name(raw_cipher)
-            ciphers_by_version[current_tls_version].append(cipher_name)
-
-    if not ciphers_by_version:
+    if not ciphers_by_port:
         print(f"{RED}[-] No cipher information parsed from nmap output.{RESET}")
         return
 
-    for version, ciphers in ciphers_by_version.items():
-        print(f"\n{version} Ciphers:")
-        safe = [c for c in ciphers if c in safe_ciphers]
-        unsafe = [c for c in ciphers if c not in safe_ciphers]
+    for port, ciphers_by_version in ciphers_by_port.items():
+        print(f"\nPort: {port}")
+        port_safe_ciphers = 0
 
-        print("  Safe to use ciphers:")
-        for c in safe:
-            print(f"    - {GREEN}{c}{RESET}")
+        for version, ciphers in ciphers_by_version.items():
+            print(f"  {version} Ciphers:")
+            safe = [c for c in ciphers if c in safe_ciphers]
+            unsafe = [c for c in ciphers if c not in safe_ciphers]
 
-        print("  Not safe to use ciphers:")
-        for c in unsafe:
-            print(f"    - {RED}{c}{RESET}")
+            print("    Safe to use ciphers:")
+            for c in safe:
+                print(f"      - {GREEN}{c}{RESET}")
 
-        total_safe_ciphers += len(safe)
+            print("    Not safe to use ciphers:")
+            for c in unsafe:
+                print(f"      - {RED}{c}{RESET}")
+
+            port_safe_ciphers += len(safe)
+
+        total_safe_ciphers += port_safe_ciphers
+        print(f"  Safe ciphers found on this port: {GREEN}{port_safe_ciphers}{RESET}")
 
     print(f"\nTotal safe ciphers found: {GREEN}{total_safe_ciphers}{RESET}")
 

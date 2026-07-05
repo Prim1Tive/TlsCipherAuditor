@@ -24,6 +24,7 @@ Additionally, the script supports:
 - Loading the safe cipher list from a local file (`recommended_ciphers.txt`)  
 - Updating the safe cipher list automatically from IANA via `--update` (requires `requests` module)  
 - Selecting custom nmap ports with comma-separated or space-separated input  
+- Grouping scan results by port when multiple ports are scanned  
 
 ## Requirements
 
@@ -152,6 +153,7 @@ The script loads the safe cipher list from the local file `recommended_ciphers.t
 
 ### Version 0.5 (Current)
 - Added custom port input for nmap scans with comma-separated and space-separated syntax
+- Added per-port result sections for scans that include multiple ports
 
 ### Version 0.4
 - Added customizable safe ciphers list documentation
