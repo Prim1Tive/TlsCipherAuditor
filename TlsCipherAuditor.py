@@ -350,7 +350,7 @@ def main():
 
         args = parser.parse_args()
 
-        QUIET = bool(args.quiet or args.quite)
+        QUIET = bool(args.quiet)
         USE_COLOR = sys.stdout.isatty() and not args.no_color
 
         if not USE_COLOR:
