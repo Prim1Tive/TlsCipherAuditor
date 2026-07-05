@@ -23,6 +23,7 @@ Additionally, the script supports:
 - Normalizing TLS 1.3 cipher names for better accuracy  
 - Loading the safe cipher list from a local file (`recommended_ciphers.txt`)  
 - Updating the safe cipher list automatically from IANA via `--update` (requires `requests` module)  
+- Selecting custom nmap ports with comma-separated or space-separated input  
 
 ## Requirements
 
@@ -79,11 +80,21 @@ You can run the script in several ways:
   python TlsCipherAuditor.py 1.1.1.1
   ```
 
+- **Check ciphers on specific ports:**
+
+  ```bash
+  python TlsCipherAuditor.py example.com -p 443,445,8081
+  
+  or
+  
+  python TlsCipherAuditor.py example.com -p 443 445 8081
+  ```
+
 - **Interactive mode:**
 
   ```bash
   python TlsCipherAuditor.py
-  # You will be prompted to enter domain or IP repeatedly
+  # You will be prompted to enter domain or IP and optional ports repeatedly
   ```
 
 - **Update the safe cipher list from IANA (requires requests):**
@@ -139,7 +150,10 @@ The script loads the safe cipher list from the local file `recommended_ciphers.t
 
 ## Changelog
 
-### Version 0.4 (Current)
+### Version 0.5 (Current)
+- Added custom port input for nmap scans with comma-separated and space-separated syntax
+
+### Version 0.4
 - Added customizable safe ciphers list documentation
 - Updated README with detailed customization instructions
 - Added disclaimer about cipher recommendations being guidelines only

@@ -67,6 +67,7 @@ def show_help():
         "Options:\n"
         "    -h, --help            Show this help message\n"
         "    -u, --update          Update cipher list from IANA website\n"
+        "    -p, --ports PORTS     Ports to scan, separated by commas or spaces\n"
         "    -q, --quiet           Suppress non-essential output\n"
         "        --quite          (Alias for --quiet)\n"
         "        --no-color       Disable ANSI colors\n\n"
@@ -78,6 +79,8 @@ def show_help():
         "    help                  Show this help message\n\n"
         "Examples:\n"
         "    python TlsCipherAuditor.py example.com\n"
+        "    python TlsCipherAuditor.py example.com -p 443,445,8081\n"
+        "    python TlsCipherAuditor.py example.com -p 443 445 8081\n"
         "    python TlsCipherAuditor.py --update\n"
         "    python TlsCipherAuditor.py\n"
         "        (enters interactive mode)\n"
@@ -90,6 +93,37 @@ def normalize_cipher_name(cipher_name):
     if cipher_name.startswith("TLS_AKE_WITH_"):
         cipher_name = cipher_name.replace("TLS_AKE_WITH_", "TLS_")
     return cipher_name
+
+
+def parse_ports(port_values):
+    if not port_values:
+        return None
+
+    if isinstance(port_values, str):
+        port_text = port_values
+    else:
+        port_text = " ".join(port_values)
+
+    ports = []
+    seen_ports = set()
+    for port in re.split(r"[\s,]+", port_text.strip()):
+        if not port:
+            continue
+        if not port.isdigit():
+            raise ValueError(f"Invalid port '{port}'. Ports must be numbers from 1 to 65535.")
+
+        port_number = int(port)
+        if port_number < 1 or port_number > 65535:
+            raise ValueError(f"Invalid port '{port}'. Ports must be numbers from 1 to 65535.")
+
+        if port_number not in seen_ports:
+            seen_ports.add(port_number)
+            ports.append(str(port_number))
+
+    if not ports:
+        return None
+
+    return ",".join(ports)
 
 
 def _strip_html(text):
@@ -206,8 +240,10 @@ def load_cipher_list():
         return default_safe_ciphers
 
 
-def check_ciphers(domain):
+def check_ciphers(domain, ports=None):
     print(f"\nDomain: {domain}")
+    if ports:
+        print(f"Ports: {ports}")
 
     if shutil.which("nmap") is None:
         print(f"{RED}[-] 'nmap' executable not found in PATH. Please install nmap and try again.{RESET}")
@@ -217,12 +253,16 @@ def check_ciphers(domain):
 
     ciphers_by_version = {}
 
+    nmap_command = [
+        "nmap",
+        "--script=ssl-enum-ciphers",
+    ]
+    if ports:
+        nmap_command.extend(["-p", ports])
+    nmap_command.append(str(domain))
+
     try:
-        result = subprocess.run([
-            "nmap",
-            "--script=ssl-enum-ciphers",
-            str(domain)
-        ], capture_output=True, text=True, check=False)
+        result = subprocess.run(nmap_command, capture_output=True, text=True, check=False)
     except Exception as e:
         print(f"{RED}[-] Failed to run nmap: {e}{RESET}")
         return
@@ -279,6 +319,7 @@ def main():
         parser = argparse.ArgumentParser(add_help=True, description="Audit TLS cipher suites reported by nmap against a recommended list.")
         parser.add_argument("domain", nargs="?", help="Domain name or IP address to check")
         parser.add_argument("-u", "--update", action="store_true", help="Update cipher list from IANA website")
+        parser.add_argument("-p", "--ports", nargs="+", help="Ports to scan, separated by commas or spaces")
         parser.add_argument("-q", "--quiet", action="store_true", help="Suppress non-essential output")
         parser.add_argument("--quite", action="store_true", help=argparse.SUPPRESS)
         parser.add_argument("--no-color", action="store_true", help="Disable ANSI colors in output")
@@ -297,8 +338,10 @@ def main():
             success = update_cipher_list()
             sys.exit(0 if success else 1)
 
+        ports = parse_ports(args.ports)
+
         if args.domain:
-            check_ciphers(args.domain)
+            check_ciphers(args.domain, ports)
             return
 
         print("Enter 'quit' or 'exit' to stop the program, 'help' for usage information")
@@ -311,10 +354,19 @@ def main():
                 show_help()
                 continue
             if domain:
-                check_ciphers(domain)
+                port_input = input('Ports (optional, comma or space separated): ').strip()
+                try:
+                    ports = parse_ports(port_input)
+                except ValueError as e:
+                    print(f"{RED}[-] {e}{RESET}")
+                    continue
+                check_ciphers(domain, ports)
 
     except KeyboardInterrupt:
         print("\nProgram terminated by user")
+    except ValueError as e:
+        print(f"{RED}[-] {e}{RESET}")
+        sys.exit(1)
     except Exception as e:
         print(f"An error occurred: {e}")
 
