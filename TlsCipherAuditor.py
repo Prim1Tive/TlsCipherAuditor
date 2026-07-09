@@ -20,17 +20,19 @@ except ImportError:
 # Runtime flags
 QUIET = False
 USE_COLOR = True
+APP_VERSION = "0.5"
+SEPARATOR = "============================================"
 
 # ANSI color codes
-GREEN = '\033[92m'  # Green for safe ciphers
-RED = '\033[91m'  # Red for unsafe ciphers
+GREEN = '\033[92m'  # Green for IANA recommended ciphers
+RED = '\033[91m'  # Red for ciphers not marked IANA recommended
 RESET = '\033[0m'  # Reset color
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CIPHER_FILE = os.path.join(SCRIPT_DIR, "recommended_ciphers.txt")
 
-# Default safe cipher list fallback
-default_safe_ciphers = {
+# Default recommended cipher list fallback
+default_recommended_ciphers = {
     "TLS_AES_128_CCM_SHA256",
     "TLS_AES_128_GCM_SHA256",
     "TLS_AES_256_GCM_SHA384",
@@ -66,7 +68,7 @@ def show_help():
         "    python TlsCipherAuditor.py [options] [domain]\n\n"
         "Options:\n"
         "    -h,    --help            Show this help message\n"
-        "    -u,    --update          Update cipher list from IANA website\n"
+        "    -u,    --update          Update recommended cipher list from IANA website\n"
         "    -p,    --ports PORTS     Ports to scan, separated by commas or spaces\n"
         "    -q,    --quiet           Suppress non-essential output\n"
         "    -nc,   --no-color       Disable ANSI colors\n\n"
@@ -231,12 +233,12 @@ def load_cipher_list():
         with open(CIPHER_FILE, "r", encoding="utf-8") as f:
             ciphers = {line.strip() for line in f if line.strip()}
         if not QUIET:
-            print(f"{GREEN}[+] Loaded {len(ciphers)} ciphers from {CIPHER_FILE}.{RESET}")
+            print(f"{GREEN}[+] Loaded {len(ciphers)} recommended ciphers.{RESET}")
         return ciphers
     except FileNotFoundError:
         if not QUIET:
             print(f"{RED}[-] {CIPHER_FILE} not found. Using default cipher list. (Use -u/--update to create {CIPHER_FILE}){RESET}")
-        return default_safe_ciphers
+        return default_recommended_ciphers
 
 
 def parse_nmap_cipher_output(output):
@@ -279,15 +281,18 @@ def parse_nmap_cipher_output(output):
 
 
 def check_ciphers(domain, ports=None):
-    print(f"\nDomain: {domain}")
+    print(f"\nTlsCipherAuditor v{APP_VERSION}")
+    print("TLS Cipher Suite Auditor")
+    print(f"Target: {domain}")
     if ports:
         print(f"Ports: {ports}")
+    print(SEPARATOR)
 
     if shutil.which("nmap") is None:
         print(f"{RED}[-] 'nmap' executable not found in PATH. Please install nmap and try again.{RESET}")
         return
 
-    safe_ciphers = load_cipher_list()
+    recommended_ciphers = load_cipher_list()
 
     nmap_command = [
         "nmap",
@@ -307,35 +312,46 @@ def check_ciphers(domain, ports=None):
         print(f"{RED}[-] nmap error: {result.stderr.strip()}{RESET}")
 
     ciphers_by_port = parse_nmap_cipher_output(result.stdout)
-    total_safe_ciphers = 0
 
     if not ciphers_by_port:
         print(f"{RED}[-] No cipher information parsed from nmap output.{RESET}")
         return
 
+    total_recommended_ciphers = 0
+    total_not_recommended_ciphers = 0
+
     for port, ciphers_by_version in ciphers_by_port.items():
         print(f"\nPort: {port}")
-        port_safe_ciphers = 0
+        port_recommended_ciphers = 0
+        port_not_recommended_ciphers = 0
 
         for version, ciphers in ciphers_by_version.items():
             print(f"  {version} Ciphers:")
-            safe = [c for c in ciphers if c in safe_ciphers]
-            unsafe = [c for c in ciphers if c not in safe_ciphers]
+            iana_recommended = [c for c in ciphers if c in recommended_ciphers]
+            not_iana_recommended = [c for c in ciphers if c not in recommended_ciphers]
 
-            print("    Safe to use ciphers:")
-            for c in safe:
+            print("    IANA Recommended ciphers:")
+            for c in iana_recommended:
                 print(f"      - {GREEN}{c}{RESET}")
 
-            print("    Not safe to use ciphers:")
-            for c in unsafe:
+            print("    Not IANA Recommended ciphers:")
+            for c in not_iana_recommended:
                 print(f"      - {RED}{c}{RESET}")
 
-            port_safe_ciphers += len(safe)
+            port_recommended_ciphers += len(iana_recommended)
+            port_not_recommended_ciphers += len(not_iana_recommended)
 
-        total_safe_ciphers += port_safe_ciphers
-        print(f"  Safe ciphers found on this port: {GREEN}{port_safe_ciphers}{RESET}")
+        total_recommended_ciphers += port_recommended_ciphers
+        total_not_recommended_ciphers += port_not_recommended_ciphers
+        print("  Summary")
+        print("  -------")
+        print(f"  IANA Recommended     : {GREEN}{port_recommended_ciphers}{RESET}")
+        print(f"  Not IANA Recommended : {RED}{port_not_recommended_ciphers}{RESET}")
 
-    print(f"\nTotal safe ciphers found: {GREEN}{total_safe_ciphers}{RESET}")
+    print("\nOverall Summary")
+    print("---------------")
+    print(f"IANA Recommended     : {GREEN}{total_recommended_ciphers}{RESET}")
+    print(f"Not IANA Recommended : {RED}{total_not_recommended_ciphers}{RESET}")
 
 
 def main():
@@ -343,7 +359,7 @@ def main():
     try:
         parser = argparse.ArgumentParser(add_help=True, description="Audit TLS cipher suites reported by nmap against a recommended list.")
         parser.add_argument("domain", nargs="?", help="Domain name or IP address to check")
-        parser.add_argument("-u",  "--update", action="store_true", help="Update cipher list from IANA website")
+        parser.add_argument("-u",  "--update", action="store_true", help="Update recommended cipher list from IANA website")
         parser.add_argument("-p",  "--ports", nargs="+", help="Ports to scan, separated by commas or spaces")
         parser.add_argument("-q",  "--quiet", action="store_true", help="Suppress non-essential output")
         parser.add_argument("-nc", "--no-color", action="store_true", help="Disable ANSI colors in output")

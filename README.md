@@ -1,10 +1,10 @@
 # TLS Cipher Auditor
 
-A Python script that analyzes SSL/TLS ciphers using nmap's ssl-enum-ciphers script and provides a color-coded output of safe and unsafe ciphers. The script supports updating the safe cipher list from the official IANA TLS parameters registry.
+A Python script that analyzes SSL/TLS ciphers using nmap's ssl-enum-ciphers script and provides color-coded output based on the IANA Recommended status. The script supports updating the recommended cipher list from the official IANA TLS parameters registry.
 
 ## Disclaimer
 
-**Important Notice**: The cipher classifications (safe/unsafe) in this tool are recommendations based on general security best practices and are not an industry standard. The security requirements for your specific use case may vary. Always:
+**Important Notice**: A cipher suite that is not marked as IANA Recommended is not automatically weak or inappropriate. The security requirements for your specific use case may vary. Always:
 
 - Consult your organization's security policies  
 - Follow relevant compliance requirements (e.g., PCI DSS, HIPAA)  
@@ -13,16 +13,16 @@ A Python script that analyzes SSL/TLS ciphers using nmap's ssl-enum-ciphers scri
 
 ## Description
 
-This script automates the process of checking SSL/TLS ciphers on a target domain or IP address. It uses nmap's ssl-enum-ciphers script to enumerate supported ciphers and categorizes them as safe or unsafe based on modern security standards. The results are displayed with color coding for better visibility:
+This script automates the process of checking SSL/TLS ciphers on a target domain or IP address. It uses nmap's ssl-enum-ciphers script to enumerate supported ciphers and categorizes them by IANA Recommended status. The results are displayed with color coding for better visibility:
 
-- 🟢 Safe ciphers are shown in green  
-- 🔴 Unsafe ciphers are shown in red  
+- 🟢 IANA Recommended ciphers are shown in green  
+- 🔴 Ciphers not marked IANA Recommended are shown in red  
 
 Additionally, the script supports:
 
 - Normalizing TLS 1.3 cipher names for better accuracy  
-- Loading the safe cipher list from a local file (`recommended_ciphers.txt`)  
-- Updating the safe cipher list automatically from IANA via `--update` (requires `requests` module)  
+- Loading the recommended cipher list from a local file (`recommended_ciphers.txt`)  
+- Updating the recommended cipher list automatically from IANA via `--update` (requires `requests` module)  
 - Selecting custom nmap ports with comma-separated or space-separated input  
 - Grouping scan results by port when multiple ports are scanned  
 
@@ -121,7 +121,7 @@ You can run the script in several ways:
   # You will be prompted to enter domain or IP and optional ports repeatedly
   ```
 
-- **Update the safe cipher list from IANA (requires requests):**
+- **Update the recommended cipher list from IANA (requires requests):**
 
   ```bash
   python TlsCipherAuditor.py --update
@@ -134,9 +134,9 @@ You can run the script in several ways:
   python TlsCipherAuditor.py --help
   ```
 
-## Safe Ciphers
+## Recommended Ciphers
 
-The script loads the safe cipher list from the local file `recommended_ciphers.txt` if present. Otherwise, it falls back to a built-in default set:
+The script loads the recommended cipher list from the local file `recommended_ciphers.txt` if present. Otherwise, it falls back to a built-in default set:
 
     "TLS_AES_128_CCM_SHA256",
     "TLS_AES_128_GCM_SHA256",
@@ -163,10 +163,10 @@ The script loads the safe cipher list from the local file `recommended_ciphers.t
     "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
     "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
 
-### Customizing Safe Ciphers
+### Customizing Recommended Ciphers
 
-- You can manually edit the `recommended_ciphers.txt` file to add or remove ciphers you consider safe.  
-- Alternatively, modify the `safe_ciphers` set in the script directly.  
+- You can manually edit the `recommended_ciphers.txt` file to add or remove ciphers you consider recommended.  
+- Alternatively, modify the `default_recommended_ciphers` set in the script directly.  
 
 ## Example Output
 
@@ -179,7 +179,7 @@ The script loads the safe cipher list from the local file `recommended_ciphers.t
 - Added per-port result sections for scans that include multiple ports
 
 ### Version 0.4
-- Added customizable safe ciphers list documentation
+- Added customizable recommended ciphers list documentation
 - Updated README with detailed customization instructions
 - Added disclaimer about cipher recommendations being guidelines only
 - Improved documentation clarity and organization
@@ -204,7 +204,7 @@ The script loads the safe cipher list from the local file `recommended_ciphers.t
 
 ### Version 0.1 (Initial Release)
 - Basic TLS cipher checking functionality
-- Color-coded output for safe/unsafe ciphers
+- Color-coded output for recommended and non-recommended ciphers
 - Command-line argument support
 - Basic nmap integration
 - Support for multiple TLS versions
